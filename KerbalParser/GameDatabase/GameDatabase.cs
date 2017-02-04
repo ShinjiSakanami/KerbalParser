@@ -60,9 +60,7 @@ namespace KerbalParser
             }
         }
 
-        private GameDatabase()
-        {
-        }
+        private GameDatabase() {}
 
         public void LoadGameDatabase(string kspPath)
         {

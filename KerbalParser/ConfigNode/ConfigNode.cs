@@ -202,7 +202,7 @@ namespace KerbalParser
 
         public void AddValue(string name, object value, string comment)
         {
-            ConfigValue v = new ConfigValue(name, ConfigNode.CleanupInput(Convert.ToString(value, CultureInfo.InvariantCulture)), comment);
+            ConfigValue v = new ConfigValue(name, ConfigNode.CleanupInput(KPUtil.WriteObject(value)), comment);
             this._values.Add(v);
         }
 
@@ -214,7 +214,7 @@ namespace KerbalParser
 
         public void AddValue(string name, object value)
         {
-            ConfigValue v = new ConfigValue(name, ConfigNode.CleanupInput(Convert.ToString(value, CultureInfo.InvariantCulture)));
+            ConfigValue v = new ConfigValue(name, ConfigNode.CleanupInput(KPUtil.WriteObject(value)));
             this._values.Add(v);
         }
 
@@ -448,278 +448,6 @@ namespace KerbalParser
                 '\r'
             });
             return ConfigNode.RecurseFormat(ConfigNode.PreFormatConfig(cfgData));
-        }
-
-        public static Enum ParseEnum(Type enumType, string enumString)
-        {
-            try
-            {
-                return (Enum)Enum.Parse(enumType, enumString, true);
-            }
-            catch (ArgumentException)
-            {
-                Debug.LogWarning("Warning: '" + enumString + "' is not a valid value of " + enumType.Name);
-                return null;
-            }
-        }
-
-        public static Color ParseColor(string colorString)
-        {
-            string[] array = colorString.Split(new char[]
-            {
-                ',',
-                ' ',
-                '\t'
-            }, StringSplitOptions.RemoveEmptyEntries);
-            if (array.Length == 3)
-            {
-                double r = double.Parse(array[0], CultureInfo.InvariantCulture);
-                double g = double.Parse(array[1], CultureInfo.InvariantCulture);
-                double b = double.Parse(array[2], CultureInfo.InvariantCulture);
-                return new Color(r, g, b);
-            }
-            if (array.Length == 4)
-            {
-                double r = double.Parse(array[0], CultureInfo.InvariantCulture);
-                double g = double.Parse(array[1], CultureInfo.InvariantCulture);
-                double b = double.Parse(array[2], CultureInfo.InvariantCulture);
-                double a = double.Parse(array[3], CultureInfo.InvariantCulture);
-                return new Color(r, g, b, a);
-            }
-            Debug.LogWarning("WARNING: Color entry is not formatted properly! Proper format for Colors is r,g,b{,a}");
-            return Color.White;
-        }
-
-        public static Vector2 ParseVector2(string vectorString)
-        {
-            string[] array = vectorString.Split(new char[]
-            {
-                ',',
-                ' ',
-                '\t'
-            }, StringSplitOptions.RemoveEmptyEntries);
-            if (array.Length == 2)
-            {
-                double x = double.Parse(array[0], CultureInfo.InvariantCulture);
-                double y = double.Parse(array[1], CultureInfo.InvariantCulture);
-                return new Vector2(x, y);
-            }
-            Debug.LogWarning("WARNING: Vector2 entry is not formatted properly! Proper format for Vector2 is x,y");
-            return Vector2.Zero;
-        }
-
-        public static Vector3 ParseVector3(string vectorString)
-        {
-            string[] array = vectorString.Split(new char[]
-            {
-                ',',
-                ' ',
-                '\t'
-            }, StringSplitOptions.RemoveEmptyEntries);
-            if (array.Length == 3)
-            {
-                double x = double.Parse(array[0], CultureInfo.InvariantCulture);
-                double y = double.Parse(array[1], CultureInfo.InvariantCulture);
-                double z = double.Parse(array[2], CultureInfo.InvariantCulture);
-                return new Vector3(x, y, z);
-            }
-            Debug.LogWarning("WARNING: Vector3 entry is not formatted properly! Proper format for Vector2 is x,y,z");
-            return Vector3.Zero;
-        }
-
-        public static Vector4 ParseVector4(string vectorString)
-        {
-            string[] array = vectorString.Split(new char[]
-            {
-                ',',
-                ' ',
-                '\t'
-            }, StringSplitOptions.RemoveEmptyEntries);
-            if (array.Length == 4)
-            {
-                double x = double.Parse(array[0], CultureInfo.InvariantCulture);
-                double y = double.Parse(array[1], CultureInfo.InvariantCulture);
-                double z = double.Parse(array[2], CultureInfo.InvariantCulture);
-                double w = double.Parse(array[3], CultureInfo.InvariantCulture);
-                return new Vector4(x, y, z, w);
-            }
-            Debug.LogWarning("WARNING: Vector4 entry is not formatted properly! Proper format for Vector2 is x,y,z,w");
-            return Vector4.Zero;
-        }
-
-        public static Quaternion ParseQuaternion(string quaternionString)
-        {
-            string[] array = quaternionString.Split(new char[]
-            {
-                ',',
-                ' ',
-                '\t'
-            }, StringSplitOptions.RemoveEmptyEntries);
-            if (array.Length == 4)
-            {
-                double x = double.Parse(array[0], CultureInfo.InvariantCulture);
-                double y = double.Parse(array[1], CultureInfo.InvariantCulture);
-                double z = double.Parse(array[2], CultureInfo.InvariantCulture);
-                double w = double.Parse(array[3], CultureInfo.InvariantCulture);
-                return new Quaternion(x, y, z, w);
-            }
-            Debug.LogWarning("WARNING: Quaternion entry is not formatted properly! Proper format for Quaternion is x,y,z,w");
-            return Quaternion.Identity;
-        }
-
-        public static Matrix4x4 ParseMatrix4x4(string matrixString)
-        {
-            string[] array = matrixString.Split(new char[]
-            {
-                ',',
-                ' ',
-                '\t'
-            }, StringSplitOptions.RemoveEmptyEntries);
-            if (array.Length == 16)
-            {
-                Matrix4x4 matrix = Matrix4x4.Identity;
-                matrix.m00 = double.Parse(array[0], CultureInfo.InvariantCulture);
-                matrix.m01 = double.Parse(array[1], CultureInfo.InvariantCulture);
-                matrix.m02 = double.Parse(array[2], CultureInfo.InvariantCulture);
-                matrix.m03 = double.Parse(array[3], CultureInfo.InvariantCulture);
-                matrix.m10 = double.Parse(array[4], CultureInfo.InvariantCulture);
-                matrix.m11 = double.Parse(array[5], CultureInfo.InvariantCulture);
-                matrix.m12 = double.Parse(array[6], CultureInfo.InvariantCulture);
-                matrix.m13 = double.Parse(array[7], CultureInfo.InvariantCulture);
-                matrix.m20 = double.Parse(array[8], CultureInfo.InvariantCulture);
-                matrix.m21 = double.Parse(array[9], CultureInfo.InvariantCulture);
-                matrix.m22 = double.Parse(array[10], CultureInfo.InvariantCulture);
-                matrix.m23 = double.Parse(array[11], CultureInfo.InvariantCulture);
-                matrix.m30 = double.Parse(array[12], CultureInfo.InvariantCulture);
-                matrix.m31 = double.Parse(array[13], CultureInfo.InvariantCulture);
-                matrix.m32 = double.Parse(array[14], CultureInfo.InvariantCulture);
-                matrix.m33 = double.Parse(array[15], CultureInfo.InvariantCulture);
-                return matrix;
-            }
-            Debug.LogWarning("WARNING: Matrix4x4 entry is not formatted properly! Proper format for Matrix4x4 is 16 csv floats (m00,m01,m02,m03,m10,m11..m33)");
-            return Matrix4x4.Identity;
-        }
-
-        public static string WriteBool(bool b)
-        {
-            return b.ToString();
-        }
-
-        public static string WriteDouble(double d)
-        {
-            return d.ToString("G17", CultureInfo.InvariantCulture);
-        }
-
-        public static string WriteInt(int i)
-        {
-            return i.ToString("G", CultureInfo.InvariantCulture);
-        }
-
-        public static string WriteEnum(Enum en)
-        {
-            return en.ToString();
-        }
-
-        public static string WriteColor(Color color)
-        {
-            return string.Concat(new string[]
-            {
-                color.r.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                color.g.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                color.b.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                color.a.ToString("G17", CultureInfo.InvariantCulture),
-            });
-        }
-
-        public static string WriteVector(Vector2 vector)
-        {
-            return string.Concat(new string[]
-            {
-                vector.x.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                vector.y.ToString("G17", CultureInfo.InvariantCulture)
-            });
-        }
-
-        public static string WriteVector(Vector3 vector)
-        {
-            return string.Concat(new string[]
-            {
-                vector.x.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                vector.y.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                vector.z.ToString("G17", CultureInfo.InvariantCulture)
-            });
-        }
-
-        public static string WriteVector(Vector4 vector)
-        {
-            return string.Concat(new string[]
-            {
-                vector.x.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                vector.y.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                vector.z.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                vector.w.ToString("G17", CultureInfo.InvariantCulture)
-            });
-        }
-
-        public static string WriteQuaternion(Quaternion quaternion)
-        {
-            return string.Concat(new string[]
-            {
-                quaternion.x.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                quaternion.y.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                quaternion.z.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                quaternion.w.ToString("G17", CultureInfo.InvariantCulture)
-            });
-        }
-
-        public static string WriteMatrix4x4(Matrix4x4 matrix)
-        {
-            return string.Concat(new string[]
-            {
-                matrix.m00.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m01.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m02.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m03.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m10.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m11.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m12.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m13.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m20.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m21.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m22.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m23.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m30.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m31.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m32.ToString("G17", CultureInfo.InvariantCulture),
-                ",",
-                matrix.m33.ToString("G17", CultureInfo.InvariantCulture)
-            });
         }
 
         public override string ToString()
@@ -1197,31 +925,31 @@ namespace KerbalParser
                 }
                 else if (fieldType == typeof(Vector2))
                 {
-                    return ConfigNode.ParseVector2(value);
+                    return KPUtil.ParseVector2(value);
                 }
                 else if (fieldType == typeof(Vector3))
                 {
-                    return ConfigNode.ParseVector3(value);
+                    return KPUtil.ParseVector3(value);
                 }
                 else if (fieldType == typeof(Vector4))
                 {
-                    return ConfigNode.ParseVector4(value);
+                    return KPUtil.ParseVector4(value);
                 }
                 else if (fieldType == typeof(Quaternion))
                 {
-                    return ConfigNode.ParseQuaternion(value);
+                    return KPUtil.ParseQuaternion(value);
                 }
                 else if (fieldType == typeof(Color))
                 {
-                    return ConfigNode.ParseColor(value);
+                    return KPUtil.ParseColor(value);
                 }
                 else if (fieldType == typeof(Matrix4x4))
                 {
-                    return ConfigNode.ParseMatrix4x4(value);
+                    return KPUtil.ParseMatrix4x4(value);
                 }
                 else if (fieldType.IsEnum)
                 {
-                    return ConfigNode.ParseEnum(fieldType, value);
+                    return KPUtil.ParseEnum(fieldType, value);
                 }
             }
             else if (fieldType == typeof(string))

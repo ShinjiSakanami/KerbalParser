@@ -166,7 +166,7 @@
             }
             if (!this.color.Equals(Color.White))
             {
-                node.AddValue("color", ConfigNode.WriteColor(this.color));
+                node.AddValue("color", KPUtil.WriteColor(this.color));
             }
         }
 
